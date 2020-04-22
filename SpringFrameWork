@@ -23,8 +23,11 @@ public class BubbleSortAlgorithm implements SortAlgorithm
 in the above code ComplexBussiness is tight coupled with Bubblesort which is not good code 
 ComplexBussiness is directly instantiate the BubbleSortAlgorithm suppose we want other sorting algorithm again i have instantiate quick which is not a good practice
 How do we make this code loosely coupled.we remove tight coupling by removing by removing instantiation
+
 SortAlgorithm soetAlgorithm = new BubbleSortAlgorithm();
+
 ComlplexBusinessService businessService = new ComplexBusinessService(sortAlgorithm);
+
 This code is good because this is loosely Coupled Programming.
 what we doing hear we are instantiate object and populate the dependecies.
 The same task will be done by springboot frame work user has specify the what are the identified objects and what are its dependencies,There are two comportant annotations that are present using which you can tell this to spring framework.that is what are the objects it needs to manage? and what are the dependencies of your particular class?
@@ -35,9 +38,12 @@ public class ComplexBusinessService
   @Autowired
 	SortAlgorithm sortAlgorith;
 }
+
 @component 
 public class BubbleSortAlgorithm implements SortAlgorithm
+
 we are putting an @component on the of the complex bussiness service and the bubble sort,this is where we are telling spring ok you need to start managing instances of the comples business and bubble sort algorithm,and spring knows it needs to manage the instances of these two classes but how do you tell that this sort is dependent on Complex Class
+
 The way you do that is by using another annotation @Autowired.as soon as you put @component it means that spring starts to manage instances of that class.and as soon as you put @Autowired that means spring would start looking for this dependency,it would start looking among the components it manages to find a matching thing for this sort alogrithm,so spring would internally do this.
 The few terminology which are frequently associated wuth spring
 Teminology 
@@ -47,7 +53,8 @@ Teminology
 4)Inversion of Control
 5)IOC Container
 6)Application Context
-The First Terminolgy is Beans.
+
+1)The First Terminolgy is Beans.
 @componet
 public class ComplexBusinessService
 {
@@ -61,3 +68,34 @@ we are telling spring framework to create instances of the complex and bubble so
 2)Autowiring
 The process where spring identifies the dependences,identifies the matches for the dependencies and populates them.
 that process is called auto wiring.
+so basically spring finds the right sort algorithm.it finds the bubble sort algorithn and crates an instance of that algorithm and pass them to ComplexBussiness Class
+3)Dependency Injection 
+spring framework understand the different annotations that you are putting on top of your classes,we are injecting this algorithm as dependency into the complex bussiness
+4)Inversion of control
+
+a)public class ComplexBusinessService
+{
+	SortAlgorithm sortAlgorithm = new BubbleSortAlgorithm();
+
+}
+public class BubbleSortAlgorithm implements SortAlgorithm
+who is creating the instance of dependency in this example?
+The class which needs it so the class which needs the dependency create an instance of the dependency
+b)@componet
+public class ComplexBusinessService
+{
+  @Autowired
+	SortAlgorithm sortAlgorith;
+}
+@component 
+public class BubbleSortAlgorithm implements SortAlgorithm
+
+who is creating the instance of dependency in this example?
+the spring framework is creating the instance in here. we are taking the control from the class that needs the dependency and giving the control to the framework to the spring framework and this is called inversion of control.
+
+5)IOC Container
+IOC Container is a generic terminology to represent anything that is implementing inversion of control.
+In the case of spring framework the typical IOC container is the application context
+
+6)Application context
+is the one where all the beans are created and managed. application context is the most important part of the spring framework that is where all the core logic of spring frame work happens
