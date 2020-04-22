@@ -1,1 +1,63 @@
 inshallah we will start spring frame work
+spring is the dependency injection frame work
+Dependency:web(ui)-->bussiness layer--Data Layer
+Bussiness layer is Dependent on Data Layer
+suppose i want to show something to user
+user layer is dependent on Bussiness Layer and bussiness layer is dependent on Data Layer
+
+public class ComplexBusinessService
+{
+	SortAlgorith sortAlgorith;
+}
+To sort the given number ComplexBuss-> is Dependent on sortalgorithm,so sortalgorith is dependency of Complesbussiness
+
+Before spring
+public class ComplexBusinessService
+{
+	SortAlgorithm sortAlgorithm = new BubbleSortAlgorithm();
+
+}
+public class BubbleSortAlgorithm implements SortAlgorithm
+
+
+in the above code ComplexBussiness is tight coupled with Bubblesort which is not good code 
+ComplexBussiness is directly instantiate the BubbleSortAlgorithm suppose we want other sorting algorithm again i have instantiate quick which is not a good practice
+How do we make this code loosely coupled.we remove tight coupling by removing by removing instantiation
+SortAlgorithm soetAlgorithm = new BubbleSortAlgorithm();
+ComlplexBusinessService businessService = new ComplexBusinessService(sortAlgorithm);
+This code is good because this is loosely Coupled Programming.
+what we doing hear we are instantiate object and populate the dependecies.
+The same task will be done by springboot frame work user has specify the what are the identified objects and what are its dependencies,There are two comportant annotations that are present using which you can tell this to spring framework.that is what are the objects it needs to manage? and what are the dependencies of your particular class?
+the annoatation is @componets
+@componet
+public class ComplexBusinessService
+{
+  @Autowired
+	SortAlgorithm sortAlgorith;
+}
+@component 
+public class BubbleSortAlgorithm implements SortAlgorithm
+we are putting an @component on the of the complex bussiness service and the bubble sort,this is where we are telling spring ok you need to start managing instances of the comples business and bubble sort algorithm,and spring knows it needs to manage the instances of these two classes but how do you tell that this sort is dependent on Complex Class
+The way you do that is by using another annotation @Autowired.as soon as you put @component it means that spring starts to manage instances of that class.and as soon as you put @Autowired that means spring would start looking for this dependency,it would start looking among the components it manages to find a matching thing for this sort alogrithm,so spring would internally do this.
+The few terminology which are frequently associated wuth spring
+Teminology 
+1)Beans
+2) Autowiring
+3)Dependency Injection
+4)Inversion of Control
+5)IOC Container
+6)Application Context
+The First Terminolgy is Beans.
+@componet
+public class ComplexBusinessService
+{
+  @Autowired
+	SortAlgorithm sortAlgorith;
+}
+@component 
+public class BubbleSortAlgorithm implements SortAlgorithm
+
+we are telling spring framework to create instances of the complex and bubble sort these are instances that spring manages.these are called beans.Beans are different objects that are managed by this spring framework.
+2)Autowiring
+The process where spring identifies the dependences,identifies the matches for the dependencies and populates them.
+that process is called auto wiring.
