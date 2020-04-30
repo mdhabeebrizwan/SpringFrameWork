@@ -2,7 +2,7 @@ inshallah we will start spring frame work
 spring is the dependency injection frame work
 Dependency:web(ui)-->bussiness layer--Data Layer
 Bussiness layer is Dependent on Data Layer
-suppose i want to show something to user
+suppose i want to show something to uservbdcnyut,m 
 user layer is dependent on Bussiness Layer and bussiness layer is dependent on Data Layer
 
 public class ComplexBusinessService
@@ -79,6 +79,7 @@ a)public class ComplexBusinessService
 
 }
 public class BubbleSortAlgorithm implements SortAlgorithm
+
 who is creating the instance of dependency in this example?
 The class which needs it so the class which needs the dependency create an instance of the dependency
 b)@componet
@@ -98,4 +99,35 @@ IOC Container is a generic terminology to represent anything that is implementin
 In the case of spring framework the typical IOC container is the application context
 
 6)Application context
-is the one where all the beans are created and managed. application context is the most important part of the spring framework that is where all the core logic of spring frame work happens
+is the one where all the beans are created and managed. application context is the most important part of the spring framework that is where all the core logic of spring frame work happens..
+Autowired -- constructor,setter Method
+@Component
+
+we have three different options of resolving,multiple candidates avaiable for auto wiring.
+so we got the application context by running the spring boot application class using the spring appliction
+
+@primary
+@name
+@qualifier(Bubble)
+
+@springBootApplication
+it will automatically scans the package and the sub packages of the package where this is in.
+Bean Scope
+Default Singleton
+when we are trying to get different instances of binary search what we are getting is the same bean
+BinarySearchImpl binarySearch = applicationContext.getBean(BinarySearchImpl.class);
+BinarySearchImpl binarySearch1= applicationContext.getBean(BinarySearchImpl.class);
+@81f160
+@81f160
+This here we are refferring to the same object when you trying to get different instances of binary serch from the application context,what we geting  is the same bean.when we requesting the application context for the same bean twice we are getting the same instance of it back.
+These kind of beans are called singleton beans.
+in spring by default any bean is a singleton beans
+a)Singleton - One instance per Spring Context
+b)Prototype -New Bean whenever REQUESTED
+c)request -One bean per HTTP request
+d)session - One bean per HTTP USER Session(specific user)
+By Default every bean scope is singleton we change by specify scope to Binary class
+@scope("prototype")
+after running we will get different scope.we asking Application context 2 Binary search using @prototype
+Hardcoding prototype here is not really a good practice what we can do is use configurableBeanFactory.
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
