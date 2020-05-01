@@ -1,3 +1,4 @@
+
 inshallah we will start spring frame work
 spring is the dependency injection frame work
 Dependency:web(ui)-->bussiness layer--Data Layer
@@ -131,3 +132,27 @@ By Default every bean scope is singleton we change by specify scope to Binary cl
 after running we will get different scope.we asking Application context 2 Binary search using @prototype
 Hardcoding prototype here is not really a good practice what we can do is use configurableBeanFactory.
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+
+@Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE,proxymode =ScopeProxyMode.TARGET_CLASS)
+if we really want to have a different instance of the JDBCCONNECTION whenever we have a request for PersonDao than we need to configure something called a proxy
+
+Difference between Spring Singleton and Gang of Four SingleTon
+
+SpringContext SingleTon
+when ever obn the same instance of PersonDao if iam calling getJdbcConnection again what would happend it would actually get new JdbcConnection(PROTOTYPE)
+LOGGER.info(personDao.gerJdbcConnection());
+LOGGER.info(personDao.gerJdbcConnection());
+
+now i have two different JDBCConnecyion 
+@3327729ad
+@752da2d
+
+Total 3 
+SO THE SCOPE PROXY IS VERY IMPORTANT ESPECIALLY WHEN Even on the same instance(PERSONDAO)iam calling twice i will get two different for single instace call
+Tht is the reason why a proxy becomes very important.wah wuld happen is ,instead of the JDBC CONNECTION AUTOWIRED into PersonDao,what would be autowired in,is something called a proxy so a proxu gets autowired in here,and whenever you call the getJdbcConnection the proxy would make sure taht it would retun the JDBC CONNECTION BACK
+
+
+Difference Between GOF Design Pattern and Spring Singleton
+in the Gof whenever they say singleTon it basically means one singleton per JVM,PER jvm you have one instanceof the beam howeever singleton in spring one instance per applicationcontect,in GOF Even if multiple application contexts are running in the same JVM,YOU Should just have one instance of that specific class,However when we talk about spring singleton there can be one instance of that class per one application context.
+If their are five application contexts that are running in single JVM then if i hava spring beans of scope singleton then i will have five instances.However if you are having a singleton which meets the defination of Gang of Four design Pattern Singleton,there will only be one instances
+
