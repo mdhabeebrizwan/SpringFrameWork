@@ -282,3 +282,56 @@ if you find No bean found exception the problem could be either of these two thi
 1)you have not define @component /@serivces
 2)The other one is the absence of a ComponentScan
 ComponenScan is like a serch so spring needs to find the components present in the package
+
+Lifecycle of a Bean-
+@PostConstruct and @PreDestroy
+
+when we put @component on a bean the entire life cycle of this bean will be mangaed bu spring so the spring ioc will create instance this bean and it will aslo make sure it will destroy when ot is not need so the entire life cycle of this bean is maintained by spring ioc container 
+let say i want do certain things the creation of this particular bean or i want do before this bean is destryod
+one of  the spring ioc container does is autowire in the dependencied,so depending on wheteher you are using setter injection or constructor injection it will make sure that the appropriate thing is called and all dependencies which have been define.
+
+@PostConstruct : it will executed when all dependency are populated and only then you would to do certain actions.those kind of thigs can be perform in something called PostConstruct ie as soon as bean is created and initailized with the dependencies,
+the postconstruct method will be called.
+A similar method which is present just before destroying,so this called PreDestroy this is called just before bean is removed out of the context this specific PreDestry Method is called
+package com.in28minutes.spring.basics.springin5steps.basic;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+public class BinarySearchImpl {
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass()); 
+
+	@Autowired
+	@Qualifier("bubble")
+	private SortAlgorithm sortAlgorithm;
+	
+	public int binarySearch(int[] numbers, int numberToSearchFor) {
+
+		int[] sortedNumbers = sortAlgorithm.sort(numbers);
+		System.out.println(sortAlgorithm);
+		// Search the array
+		return 3;
+	}
+	
+	@PostConstruct
+	public void postConstruct() {
+		logger.info("postConstruct");
+	}
+
+	@PreDestroy
+	public void preDestroy() {
+		logger.info("preDestroy");
+	}
+
+}
