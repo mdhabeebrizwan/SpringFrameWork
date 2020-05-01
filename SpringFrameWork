@@ -147,6 +147,23 @@ now i have two different JDBCConnecyion
 @3327729ad
 @752da2d
 
+ package com.in28minutes.spring.basics.springin5steps.scope;
+
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+
+@Component
+@Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE, 
+		proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class JdbcConnection {
+	public JdbcConnection() {
+		System.out.println("JDBC Connection");
+	}
+}
+
+
 Total 3 
 SO THE SCOPE PROXY IS VERY IMPORTANT ESPECIALLY WHEN Even on the same instance(PERSONDAO)iam calling twice i will get two different for single instace call
 Tht is the reason why a proxy becomes very important.wah wuld happen is ,instead of the JDBC CONNECTION AUTOWIRED into PersonDao,what would be autowired in,is something called a proxy so a proxu gets autowired in here,and whenever you call the getJdbcConnection the proxy would make sure taht it would retun the JDBC CONNECTION BACK
@@ -155,4 +172,113 @@ Tht is the reason why a proxy becomes very important.wah wuld happen is ,instead
 Difference Between GOF Design Pattern and Spring Singleton
 in the Gof whenever they say singleTon it basically means one singleton per JVM,PER jvm you have one instanceof the beam howeever singleton in spring one instance per applicationcontect,in GOF Even if multiple application contexts are running in the same JVM,YOU Should just have one instance of that specific class,However when we talk about spring singleton there can be one instance of that class per one application context.
 If their are five application contexts that are running in single JVM then if i hava spring beans of scope singleton then i will have five instances.However if you are having a singleton which meets the defination of Gang of Four design Pattern Singleton,there will only be one instances
+ example
+public class SpringIn5StepsScopeApplication {
+	
+	private static Logger LOGGER = 
+			LoggerFactory.getLogger(SpringIn5StepsScopeApplication.class); 
+	
+	public static void main(String[] args) {
 
+		ApplicationContext applicationContext = 
+				SpringApplication.run(SpringIn5StepsScopeApplication.class, args);
+		
+		PersonDAO personDao = 
+				applicationContext.getBean(PersonDAO.class);
+		
+		PersonDAO personDao2 = 
+				applicationContext.getBean(PersonDAO.class);
+		
+		LOGGER.info("{}", personDao);
+		LOGGER.info("{}", personDao.getJdbcConnection());
+		
+		LOGGER.info("{}", personDao2);
+		LOGGER.info("{}", personDao.getJdbcConnection());
+		
+	}
+}
+
+Using Component Scan to scan for beans
+
+ComponentDAP.JAVA  and
+ComponentjdbcConnection.java IS IN in28minutes/spring/basics/componentscan/ComponentDAO.java Pakage 
+
+
+[
+/src/main/java/com/in28minutes/spring/basics/componentscan/ComponentDAO.java
+package com.in28minutes.spring.basics.componentscan;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ComponentDAO {
+
+	@Autowired
+	ComponentJdbcConnection jdbcConnection;
+
+	public ComponentJdbcConnection getJdbcConnection() {
+		return jdbcConnection;
+	}
+
+	public void setComponentJdbcConnection(ComponentJdbcConnection jdbcConnection) {
+		this.jdbcConnection = jdbcConnection;
+	}
+}
+
+/src/main/java/com/in28minutes/spring/basics/componentscan/ComponentJdbcConnection.java
+package com.in28minutes.spring.basics.componentscan;
+
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+
+@Component
+@Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE, 
+		proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class ComponentJdbcConnection {
+	public ComponentJdbcConnection() {
+		System.out.println("JDBC Connection");
+	}
+}]
+But SpringIn5StepsComponentScanApplication.java is another package {src/main/java/com/in28minutes/spring/basics/springin5steps/SpringIn5StepsComponentScanApplication.java
+ }
+
+
+when we run the applications it will throw an exception in main thread  it saying i can not find such thread with defination that is i cant fine ComponentDao for you what is the problem?
+the reason why this is not being pickup is because this pakage wherever it is present is not part of the componentscan class so what happens is here we are saying springBootApplication. when erver we say to @SpringBootApplication it automatically defines a componentScan on this package,it is almost like saying @ComponentScan is another annotation,it will  scan all package present inside however the things in other packages are not picked up so if i want other package to be picked up we have define the package in Component Scan()
+package com.in28minutes.spring.basics.springin5steps;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+
+import com.in28minutes.spring.basics.componentscan.ComponentDAO;
+
+@SpringBootApplication
+@ComponentScan("com.in28minutes.spring.basics.componentscan")
+public class SpringIn5StepsComponentScanApplication {
+	
+	private static Logger LOGGER = 
+			LoggerFactory.getLogger(SpringIn5StepsComponentScanApplication.class); 
+	
+	public static void main(String[] args) {
+
+		ApplicationContext applicationContext = 
+				SpringApplication.run(SpringIn5StepsComponentScanApplication.class, args);
+		
+		ComponentDAO componentDAO = 
+				applicationContext.getBean(ComponentDAO.class);
+		
+		LOGGER.info("{}", componentDAO);
+		
+	}
+}
+if you find No bean found exception the problem could be either of these two things
+1)you have not define @component /@serivces
+2)The other one is the absence of a ComponentScan
+ComponenScan is like a serch so spring needs to find the components present in the package
