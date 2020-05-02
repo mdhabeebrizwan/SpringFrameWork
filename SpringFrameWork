@@ -518,3 +518,64 @@ public class XmlPersonDAO {
 
 we have defined the beans for loading using xml, we defined XMLPersonDAO,we defined XmlJdbcConnection we also define XML,SO WE CREATED AN APPLICATION CONTEXT DOT XML,THAT WE CAN USE TO LOAD THE BEANS UP.WE ARE MANUALLY CREATING THE BEANS,AND ALSO AUTO-WIRING THE XMLJdbcConnection into the xmlPersonDAO.Now we would to launch up this application context,so we will need to create an application file for that(Spring5stepsXMLContextApplication).for loading the java context up,we use AnnotationConfigApplicationContext right?so similar to that there is something called ClaspathXMLApplicationContext.so we create a ClaspathXMLApplicationContext in this e will location of xml file.
 what we are using is xml application context.and we are trying to load the beam  personDAO from it,if we look we not using any annotation here,we have define and dependency in xml file and load in springxml file,as bean increase the size of the file will be increase and difficult to maintain,before annotation it is difficult to manage the bean and dependency
+
+
+
+Mixing xml context with component scan for beans defined with annotaion..
+
+
+/src/main/resources/applicationContext.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<context:component-scan base-package="com.in28minutes.spring.basics"/>// we want to load the bean which are present in the other packagehow can we load in xml configuration,in this it will load all the bean present in that package
+
+    <bean id="xmlJdbcConnection" 
+    	class="com.in28minutes.spring.basics.springin5steps.xml.XmlJdbcConnection">
+    </bean>
+
+    <bean id="xmlPersonDAO" class="com.in28minutes.spring.basics.springin5steps.xml.XmlPersonDAO">
+    		<property name="xmlJdbcConnection" ref="xmlJdbcConnection"/>
+    </bean>
+
+</beans>
+
+
+
+
+So here we are actually using a combination we have for some of the bean we defining and multilying them(object),for the other beans we using a component scan to load themp up.
+
+
+package com.in28minutes.spring.basics.springin5steps;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.in28minutes.spring.basics.springin5steps.xml.XmlPersonDAO;
+
+public class SpringIn5StepsXMLContextApplication {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(SpringIn5StepsScopeApplication.class);
+
+	public static void main(String[] args) {
+
+		try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
+				"applicationContext.xml")) {
+
+			LOGGER.info("Beans Loaded -> {}", (Object) applicationContext.getBeanDefinitionNames());
+			// [xmlJdbcConnection, xmlPersonDAO]
+			//it will load (show)all the beam present in side the package we are using object to store more than one bean
+
+			XmlPersonDAO personDao = applicationContext.getBean(XmlPersonDAO.class);
+
+			LOGGER.info("{} {}", personDao, personDao.getXmlJdbcConnection());
+		}
+	}
+}
