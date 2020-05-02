@@ -579,3 +579,42 @@ public class SpringIn5StepsXMLContextApplication {
 		}
 	}
 }
+
+IOC CONTAINER VS APPLICATION CONTEXT VS BEAN FACTORY
+WHAT IS IOC CONTAINER
+Public class WelcomeController 
+{
+	private WelcomeService service = new WelcomeService();
+
+}
+WelcomeService is a dependency of the WelcomeController.So the WelcomeController directly creates an instances off it.this means that is tightly coupled with us.
+@Component
+Public class WelcomeContoller
+{
+	@Autowired
+	private WelcomeService service;
+
+}
+@component
+
+public class WelcomeService
+{
+	
+}
+However when we use spring then we would do this above.all above operation creating bean and dependency will be done by Spring Framework
+Here we are inverting the control,previosly the controller of creating welcomeservice and the control of creating the dependency was with bean itself,but now we shifting the responsibility out to spring.this is called invenstion of control.
+
+And the program or the framework which provides this,called the IOC Container,The IOC Container is the one which manages these Beans
+
+In spring there are two implementation of the IOC Container.one is the Application Context secound is Bean Factory, in all the example that we working now we have been making use Application Context.
+because Spring Recomeded to use Application Context in 99% of these scenarios.
+Now what is the difference between an Application Context and Bean Factory
+Application Factory is nothing but Bean Factory ++..
+The core features of spring are inside the jar called Spring-Core.And that's what the Bean Factory provides.
+Bean Factory provides the basic management for Beans and wiring of dependency that's it it doest provide anything more.
+The Application Context provide more features than a  Bean Factory it provide all features that are typically meeded by Enterprise Applications
+Features that Application Context Provide
+1)Spring's AOP features
+2)Internationlization
+3)WebApplicationContext for web Applications
+if a device which has very less meomoy then we have go for Bean Factory
