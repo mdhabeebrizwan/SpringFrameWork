@@ -335,3 +335,186 @@ public class BinarySearchImpl {
 	}
 
 }
+
+Container and Dependency injection(CDI) @Named,@Inject
+it is like interface it defines the different annotations(@Named)and CDI implementation framework would provide the fuctionality.instead of using @Componet i can use @Named,we change @inject in place of @Autowire no problem because spring implement CDI.INSTEAD OF SPRING ANNOTATION WE CAN USED CDI ANNOTATIONS
+ ADD DEPENDENCY IN POM FILE
+ <dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+		</dependency>
+import javax.inject.Inject;
+import javax.inject.Named;
+
+@Named
+public class SomeCdiBusiness {
+	
+	@Inject
+	SomeCdiDao someCdiDao;
+
+	public SomeCdiDao getSomeCDIDAO() {
+		return someCdiDao;
+	}
+
+	public void setSomeCDIDAO(SomeCdiDao someCdiDao) {
+		this.someCdiDao = someCdiDao;
+	}
+}
+
+
+Removing Spring Boot in Basic Application
+package com.in28minutes.spring.basics.springin5steps;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+import com.in28minutes.spring.basics.springin5steps.basic.BinarySearchImpl;
+
+@Configuration
+@ComponentScan
+public class SpringIn5StepsBasicApplication {
+
+	public static void main(String[] args) {
+
+		ApplicationContext applicationContext =
+				new AnnotationConfigApplicationContext(SpringIn5StepsBasicApplication.class);
+		
+		BinarySearchImpl binarySearch = 
+				applicationContext.getBean(BinarySearchImpl.class);
+
+		BinarySearchImpl binarySearch1 = 
+				applicationContext.getBean(BinarySearchImpl.class);
+
+		System.out.println(binarySearch);
+		System.out.println(binarySearch1);
+		
+		int result = 
+				binarySearch.binarySearch(new int[] { 12, 4, 6 }, 3);
+		System.out.println(result);
+	}
+}
+
+Before spring boot how we working 
+The thing which we have added in are @configuration,@configuration defines that is a spring configuration in java if you want to define a spring configuration,we used the @configuration
+@componentScan defines that this specific package needs to be scanned for components
+The other thing which we have done is use AnnotationConfigApplication context to create the application context.
+The other thing what we changed in the pom xml we remove spring starter and we added 
+<groupid>org.springframeword</groupId>
+<artifactid>spring-core</artifactId>
+
+Add Logback and Close Appliation Context
+Closing the Application Context using try and Catch,it will automatically close App Context when some errors occurs
+
+/src/main/java/com/in28minutes/spring/basics/springin5steps/SpringIn5StepsBasicApplication.java
+package com.in28minutes.spring.basics.springin5steps;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+import com.in28minutes.spring.basics.springin5steps.basic.BinarySearchImpl;
+
+@Configuration
+@ComponentScan
+public class SpringIn5StepsBasicApplication {
+
+	public static void main(String[] args) {
+
+		try (AnnotationConfigApplicationContext applicationContext = 
+				new AnnotationConfigApplicationContext(
+				SpringIn5StepsBasicApplication.class)) {
+
+			BinarySearchImpl binarySearch = 
+					applicationContext.getBean(BinarySearchImpl.class);
+
+			BinarySearchImpl binarySearch1 = 
+					applicationContext.getBean(BinarySearchImpl.class);
+
+			System.out.println(binarySearch);
+			System.out.println(binarySearch1);
+
+			int result = binarySearch.binarySearch(new int[] { 12, 4, 6 }, 3);
+			System.out.println(result);
+		}
+	}
+}
+
+Defining Spring Application Context using xml -part 1 & 2
+
+/src/main/java/com/in28minutes/spring/basics/springin5steps/SpringIn5StepsXMLContextApplication.java
+package com.in28minutes.spring.basics.springin5steps;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.in28minutes.spring.basics.springin5steps.xml.XmlPersonDAO;
+
+@Configuration
+@ComponentScan
+public class SpringIn5StepsXMLContextApplication {
+
+	public static void main(String[] args) {
+
+		try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
+				"applicationContext.xml")) {
+
+			XmlPersonDAO personDao = applicationContext.getBean(XmlPersonDAO.class);
+			System.out.println(personDao);
+			System.out.println(personDao.getXmlJdbcConnection());
+		}
+	}
+}
+
+
+
+/src/main/java/com/in28minutes/spring/basics/springin5steps/xml/XmlJdbcConnection.java
+package com.in28minutes.spring.basics.springin5steps.xml;
+
+public class XmlJdbcConnection {
+	public XmlJdbcConnection() {
+		System.out.println("JDBC Connection");
+	}
+}
+/src/main/java/com/in28minutes/spring/basics/springin5steps/xml/XmlPersonDAO.java
+package com.in28minutes.spring.basics.springin5steps.xml;
+
+public class XmlPersonDAO {
+
+	XmlJdbcConnection xmlJdbcConnection;
+
+	public XmlJdbcConnection getXmlJdbcConnection() {
+		return xmlJdbcConnection;
+	}
+
+	public void setXmlJdbcConnection(XmlJdbcConnection jdbcConnection) {
+		this.xmlJdbcConnection = jdbcConnection;
+	}
+}
+
+
+
+/src/main/resources/application.properties
+#logging.level.org.springframework = debug
+/src/main/resources/applicationContext.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="xmlJdbcConnection" 
+    	class="com.in28minutes.spring.basics.springin5steps.xml.XmlJdbcConnection">
+    </bean>
+
+    <bean id="xmlPersonDAO" class="com.in28minutes.spring.basics.springin5steps.xml.XmlPersonDAO">
+    		<property name="xmlJdbcConnection" ref="xmlJdbcConnection"/>
+    </bean>
+
+</beans>
+
+we have defined the beans for loading using xml, we defined XMLPersonDAO,we defined XmlJdbcConnection we also define XML,SO WE CREATED AN APPLICATION CONTEXT DOT XML,THAT WE CAN USE TO LOAD THE BEANS UP.WE ARE MANUALLY CREATING THE BEANS,AND ALSO AUTO-WIRING THE XMLJdbcConnection into the xmlPersonDAO.Now we would to launch up this application context,so we will need to create an application file for that(Spring5stepsXMLContextApplication).for loading the java context up,we use AnnotationConfigApplicationContext right?so similar to that there is something called ClaspathXMLApplicationContext.so we create a ClaspathXMLApplicationContext in this e will location of xml file.
+what we are using is xml application context.and we are trying to load the beam  personDAO from it,if we look we not using any annotation here,we have define and dependency in xml file and load in springxml file,as bean increase the size of the file will be increase and difficult to maintain,before annotation it is difficult to manage the bean and dependency
