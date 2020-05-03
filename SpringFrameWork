@@ -618,3 +618,173 @@ Features that Application Context Provide
 2)Internationlization
 3)WebApplicationContext for web Applications
 if a device which has very less meomoy then we have go for Bean Factory
+
+34)@Component vs @Service vs @Repository vs @Controller
+@Component -Generic Component
+@Repository - encapsulating storage,retrieval,and search behavior typically from a relational Database
+@Service -- Business Logic
+@Controller - Controller in MVC Pattern
+
+src/main/java/com/in28minutes/spring/basics/componentscan/ComponentDAO.java
+package com.in28minutes.spring.basics.componentscan;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository  // This annotation is used to retrive data from database
+public class ComponentDAO {
+
+	@Autowired
+	ComponentJdbcConnection jdbcConnection;
+
+	public ComponentJdbcConnection getJdbcConnection() {
+		return jdbcConnection;
+	}
+
+	public void setComponentJdbcConnection(ComponentJdbcConnection jdbcConnection) {
+		this.jdbcConnection = jdbcConnection;
+	}
+}
+
+src/main/java/com/in28minutes/spring/basics/springin5steps/basic/BinarySearchImpl.java
+package com.in28minutes.spring.basics.springin5steps.basic;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+@Service    ///This annotation is used in Bussiness Logic
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+public class BinarySearchImpl {
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass()); 
+
+	@Autowired
+	@Qualifier("bubble")
+	private SortAlgorithm sortAlgorithm;
+	
+	public int binarySearch(int[] numbers, int numberToSearchFor) {
+
+		int[] sortedNumbers = sortAlgorithm.sort(numbers);
+		System.out.println(sortAlgorithm);
+		// Search the array
+		return 3;
+	}
+	
+	@PostConstruct
+	public void postConstruct() {
+		logger.info("postConstruct");
+	}
+
+	@PreDestroy
+	public void preDestroy() {
+		logger.info("preDestroy");
+	}
+
+}
+/src/main/java/com/in28minutes/spring/basics/springin5steps/basic/BubbleSortAlgorithm.java
+package com.in28minutes.spring.basics.springin5steps.basic;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+@Service
+@Qualifier("bubble")
+public class BubbleSortAlgorithm implements SortAlgorithm {
+	public int[] sort(int[] numbers) {
+		// Logic for Bubble Sort
+		return numbers;
+	}
+}
+/src/main/java/com/in28minutes/spring/basics/springin5steps/basic/QuickSortAlgorithm.java
+package com.in28minutes.spring.basics.springin5steps.basic;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+@Service
+@Qualifier("quick")
+public class QuickSortAlgorithm implements SortAlgorithm {
+	public int[] sort(int[] numbers) {
+		// Logic for Quick Sort
+		return numbers;
+	}
+}
+
+
+Read the value from Property file @value
+...................
+
+
+....................................
+/src/main/resources/app.properties
+external.service.url=http://someserver.dev.com/service
+....................................... 
+
+
+
+/src/main/java/com/in28minutes/spring/basics/springin5steps/properties/SomeExternalService.java
+package com.in28minutes.spring.basics.springin5steps.properties;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+public class SomeExternalService {
+	
+	@Value("${external.service.url}")  /// we are getting the value from the property file using the @value annotation
+	private String url;
+	
+	public String returnServiceURL(){
+		return url;                  //returning the url 
+	}
+
+}
+
+
+
+package com.in28minutes.spring.basics.springin5steps;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+
+import com.in28minutes.spring.basics.springin5steps.properties.SomeExternalService;
+
+@Configuration
+@ComponentScan
+// 
+@PropertySource("classpath:app.properties")        //Scanning the Property file and loading the property file
+public class SpringIn5StepsPropertiesApplication {
+
+	public static void main(String[] args) {
+
+		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(
+				SpringIn5StepsPropertiesApplication.class)) {
+
+			SomeExternalService service = applicationContext.getBean(SomeExternalService.class);
+			System.out.println(service.returnServiceURL());
+		}
+	}
+}
+
+...............................................................
+
+
+
+
+
+
+
+
+
